@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Savings — Interactive Prototype</title>
+<style>
+:root{--purple:#6846d9;--purple2:#8b6cf0;--ink:#24213a;--muted:#77748b;--bg:#f5f3fb;--card:#fff;--green:#20a879;--orange:#ff9a45}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--ink)}
+.app{max-width:430px;min-height:100vh;margin:auto;background:#f8f7fc;position:relative;padding-bottom:88px;box-shadow:0 0 35px #2a1b5518}
+header{padding:24px 20px 18px;background:linear-gradient(135deg,#6542d4,#9476f4);color:white;border-radius:0 0 26px 26px}
+.top{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:800;font-size:20px;letter-spacing:-.5px}.avatar{border:1px solid #ffffff80;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;background:#ffffff25}
+.hello{font-size:13px;opacity:.85;margin-top:22px}.balance-label{font-size:13px;opacity:.85;margin-top:5px}.balance{font-size:34px;font-weight:800;margin:3px 0 13px;letter-spacing:-1px}.change{font-size:12px;background:#ffffff25;padding:6px 9px;border-radius:20px;display:inline-block}
+.tabs{display:flex;gap:9px;margin-top:17px}.tabs span{font-size:12px;padding:7px 13px;border-radius:20px;background:#ffffff20}.tabs .active{background:white;color:var(--purple);font-weight:700}
+main{padding:18px 17px}.section-head{display:flex;justify-content:space-between;align-items:center;margin:4px 1px 12px}.section-head h2{font-size:16px;margin:0}.link{font-size:12px;color:var(--purple);font-weight:700;cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.card{background:var(--card);border-radius:17px;padding:15px;box-shadow:0 5px 18px #34265b0b}.metric small{color:var(--muted);font-size:11px}.metric strong{display:block;font-size:20px;margin:6px 0 3px}.positive{color:var(--green);font-size:11px}.negative{color:#e36e55;font-size:11px}
+.panel{background:white;border-radius:18px;padding:16px;margin-top:15px;box-shadow:0 5px 18px #34265b0b}.bars{height:115px;display:flex;align-items:end;gap:12px;padding:10px 3px 0}.bar-wrap{flex:1;text-align:center;font-size:10px;color:var(--muted)}.bar{width:100%;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,#9b83f4,#6747d9);min-height:8px}.bar-wrap span{display:block;margin-top:6px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.quick button{border:0;background:white;border-radius:14px;padding:12px 4px;color:var(--ink);font-size:10px;box-shadow:0 4px 15px #34265b0b;cursor:pointer}.quick i{font-style:normal;display:block;font-size:21px;margin-bottom:5px}
+.offer{display:flex;gap:12px;align-items:center}.offer-icon{width:48px;height:48px;border-radius:14px;background:#fff0df;display:grid;place-items:center;font-size:25px}.offer strong{font-size:13px}.offer p{margin:4px 0 0;color:var(--muted);font-size:11px}.pill{margin-left:auto;background:#fff1e5;color:#d87522;padding:6px 8px;border-radius:9px;font-size:11px;font-weight:800;white-space:nowrap}
+.transaction{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid #f0eef5;gap:11px}.transaction:last-child{border:0}.tx-icon{width:38px;height:38px;border-radius:12px;background:#f0edff;display:grid;place-items:center}.tx-info{flex:1}.tx-info b{font-size:12px;display:block}.tx-info small{font-size:10px;color:var(--muted)}.amount{font-size:12px;font-weight:800}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100%);display:flex;justify-around:background:#fff;padding:11px 8px 17px;box-shadow:0 -5px 20px #24194b12;border-radius:18px 18px 0 0;z-index:4}
+nav button{border:0;background:none;color:#9995aa;font-size:10px;cursor:pointer;padding:3px 8px}nav button b{display:block;font-size:19px;margin-bottom:3px}nav button.active{color:var(--purple);font-weight:800}
+.fab{position:fixed;bottom:66px;left:50%;transform:translateX(-50%);width:54px;height:54px;border:5px solid #f8f7fc;border-radius:50%;background:var(--purple);color:white;font-size:27px;z-index:5;cursor:pointer;box-shadow:0 6px 15px #6846d955}
+.page{display:none}.page.active{display:block}.page-title{font-size:22px;font-weight:800;margin:5px 0 4px}.sub{font-size:12px;color:var(--muted);margin:0 0 16px}
+button.primary{background:var(--purple);color:white;border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}button.secondary{background:#f0edff;color:var(--purple);border:0;border-radius:11px;padding:9px 12px;font-weight:700;cursor:pointer}
+input,select{width:100%;padding:12px;border:1px solid #e5e1ef;border-radius:11px;margin:6px 0 12px;font:inherit;background:#fff;color:var(--ink)}label{font-size:11px;color:var(--muted);font-weight:700}
+.coupon{background:linear-gradient(120deg,#fff,#f1edff);border:1px solid #e8e1ff;border-radius:16px;padding:15px;margin:10px 0;display:flex;align-items:center;gap:12px}.coupon .emoji{font-size:28px}.coupon div:nth-child(2){flex:1}.coupon b{font-size:13px}.coupon small{display:block;color:var(--muted);margin-top:4px;font-size:11px}
+.notice{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
+.modal{display:none;position:fixed;inset:0;background:#17132988;z-index:10;align-items:end;justify-content:center}.modal.show{display:flex}.sheet{background:#fff;width:min(430px,100%);border-radius:24px 24px 0 0;padding:22px 20px 30px;max-height:90vh;overflow:auto}.sheet h2{margin:0 0 5px;font-size:19px}.close{float:right;border:0;background:#f1eff7;border-radius:50%;width:30px;height:30px;cursor:pointer}
+.toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%);background:#24213a;color:white;padding:10px 16px;border-radius:20px;font-size:12px;display:none;z-index:20;white-space:nowrap}
+@media(min-width:600px){body{padding:20px 0}.app{border-radius:28px;overflow:hidden;min-height:850px}nav{bottom:20px;border-radius:18px}.fab{bottom:86px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="top"><div class="brand">💜 Smart Savings</div><div class="avatar">👤</div></div>
+ <div class="hello">Good evening, Deepthi 👋</div>
+ <div class="balance-label">Your available balance</div>
+ <div class="balance" id="balance">₹18,450</div>
+ <span class="change">↗ 12% saved this month</span>
+ <div class="tabs"><span class="active" onclick="setPeriod('Week',this)">Week</span><span onclick="setPeriod('Month',this)">Month</span><span onclick="setPeriod('Year',this)">Year</span></div>
+</header>
+<main>
+<section class="page active" id="home">
+ <div class="section-head"><h2>Monthly overview</h2><span class="link" onclick="showPage('reports')">View reports →</span></div>
+ <div class="grid">
+  <div class="card metric"><small>↘ Total expenses</small><strong id="expenses">₹12,350</strong><span class="negative">↑ 4.8% this month</span></div>
+  <div class="card metric"><small>♧ Total savings</small><strong id="savings">₹6,100</strong><span class="positive">↑ 12% this month</span></div>
+ </div>
+ <div class="quick">
+  <button onclick="openExpense()"><i>＋</i>Add expense</button><button onclick="showPage('reports')"><i>▥</i>Reports</button><button onclick="voice()"><i>🎙️</i>Voice input</button><button onclick="showPage('coupons')"><i>🎁</i>Coupons</button>
+ </div>
+ <div class="panel"><div class="section-head"><h2>Spending activity</h2><span class="link" id="periodLabel">This month</span></div>
+  <div class="bars"><div class="bar-wrap"><div class="bar" style="height:43%"></div><span>Mon</span></div><div class="bar-wrap"><div class="bar" style="height:70%"></div><span>Tue</span></div><div class="bar-wrap"><div class="bar" style="height:53%"></div><span>Wed</span></div><div class="bar-wrap"><div class="bar" style="height:88%"></div><span>Thu</span></div><div class="bar-wrap"><div class="bar" style="height:60%"></div><span>Fri</span></div><div class="bar-wrap"><div class="bar" style="height:35%"></div><span>Sat</span></div><div class="bar-wrap"><div class="bar" style="height:48%"></div><span>Sun</span></div></div>
+ </div>
+ <div class="panel"><div class="section-head"><h2>Smart offer for you</h2><span class="link" onclick="showPage('coupons')">See all</span></div><div class="offer"><div class="offer-icon">🍔</div><div><strong>Swiggy · Save on food orders</strong><p>Offer matched to your food expenses</p></div><span class="pill">₹150 OFF</span></div></div>
+ <div class="panel"><div class="section-head"><h2>Recent transactions</h2><span class="link" onclick="showPage('reports')">See all</span></div><div id="transactions">
+  <div class="transaction"><div class="tx-icon">🛒</div><div class="tx-info"><b>Grocery shopping</b><small>Today · Groceries</small></div><span class="amount">−₹1,250</span></div>
+  <div class="transaction"><div class="tx-icon">☕</div><div class="tx-info"><b>Café Coffee Day</b><small>Yesterday · Food</small></div><span class="amount">−₹280</span></div>
+  <div class="transaction"><div class="tx-icon">🚕</div><div class="tx-info"><b>Travel</b><small>Yesterday · Transport</small></div><span class="amount">−₹350</span></div>
+ </div></div>
+</section>
+<section class="page" id="reports"><div class="page-title">Reports & insights</div><p class="sub">Understand where your money goes.</p>
+ <div class="grid"><div class="card metric"><small>Total spent</small><strong id="reportSpent">₹12,350</strong><span class="negative">This month</span></div><div class="card metric"><small>Saved</small><strong>₹6,100</strong><span class="positive">12% higher</span></div></div>
+ <div class="panel"><h2 style="font-size:15px">Spending by category</h2>
+  <div class="transaction"><div class="tx-icon">🍔</div><div class="tx-info"><b>Food & dining</b><small>32% of expenses</small></div><b>₹3,950</b></div>
+  <div class="transaction"><div class="tx-icon">🛍️</div><div class="tx-info"><b>Shopping</b><small>26% of expenses</small></div><b>₹3,210</b></div>
+  <div class="transaction"><div class="tx-icon">🚕</div><div class="tx-info"><b>Transport</b><small>18% of expenses</small></div><b>₹2,220</b></div>
+  <div class="transaction"><div class="tx-icon">📚</div><div class="tx-info"><b>Other</b><small>24% of expenses</small></div><b>₹2,970</b></div>
+ </div>
+ <div class="panel"><h2 style="font-size:15px">Smart saving tip 💡</h2><p class="sub" style="margin:8px 0 0">Your food spending is your highest category. Try setting a weekly dining budget and use relevant coupons to save more.</p></div>
+</section>
+<section class="page" id="coupons"><div class="page-title">Offers & coupons 🎁</div><p class="sub">Offers selected around your spending habits.</p>
+ <div class="coupon"><div class="emoji">🍔</div><div><b>Swiggy — ₹150 OFF</b><small>On your next eligible food order</small></div><button class="secondary" onclick="claim(this)">Claim</button></div>
+ <div class="coupon"><div class="emoji">🛒</div><div><b>Local Mart — 10% OFF</b><small>Save on monthly grocery essentials</small></div><button class="secondary" onclick="claim(this)">Claim</button></div>
+ <div class="coupon"><div class="emoji">☕</div><div><b>Nearby Café — Buy 1 Get 1</b><small>Support a local business near you</small></div><button class="secondary" onclick="claim(this)">Claim</button></div>
+ <div class="panel"><h2 style="font-size:15px">Why these offers?</h2><p class="sub" style="margin:7px 0 0">Smart Savings highlights deals related to categories where you spend most, helping you save on purchases you already make.</p></div>
+</section>
+<section class="page" id="voice"><div class="page-title">Voice assistant 🎙️</div><p class="sub">Add an expense by speaking naturally.</p><div class="panel" style="text-align:center;padding:30px 18px"><div style="font-size:55px">🎙️</div><h2 style="font-size:18px">Tell Smart Savings what you spent</h2><p class="sub">Example: “I spent 250 rupees on lunch”</p><button class="primary" onclick="voice()">Start voice demo</button><p class="notice">Prototype demo: voice recognition is simulated. Use Add Expense to enter a real test transaction.</p></div></section>
+<section class="page" id="profile"><div class="page-title">Your profile</div><p class="sub">Manage your Smart Savings preferences.</p><div class="panel"><div class="offer"><div class="avatar" style="background:#eee9ff;color:#6846d9">👤</div><div><b>Deepthi</b><p class="sub" style="margin:3px 0 0">Smart Savings member</p></div></div><div class="transaction"><div class="tx-info"><b>Monthly budget</b><small>Set a spending target</small></div><b>₹20,000</b></div><div class="transaction"><div class="tx-info"><b>Notifications</b><small>Saving tips and offers</small></div><b>On</b></div><div class="transaction"><div class="tx-info"><b>Local business offers</b><small>Discover nearby deals</small></div><b>On</b></div></div></section>
+</main>
+<button class="fab" onclick="openExpense()" aria-label="Add expense">＋</button>
+<nav><button class="active" data-page="home" onclick="showPage('home',this)"><b>⌂</b>Home</button><button data-page="reports" onclick="showPage('reports',this)"><b>▥</b>Insights</button><button data-page="coupons" onclick="showPage('coupons',this)"><b>🎁</b>Coupons</button><button data-page="profile" onclick="showPage('profile',this)"><b>♙</b>Profile</button></nav>
+</div>
+<div class="modal" id="expenseModal"><div class="sheet"><button class="close" onclick="closeExpense()">×</button><h2>Add an expense</h2><p class="sub">Keep your spending up to date.</p><form id="expenseForm"><label>Expense name</label><input id="expenseName" placeholder="e.g. Lunch" required><label>Amount (₹)</label><input id="expenseAmount" type="number" min="1" placeholder="e.g. 250" required><label>Category</label><select id="expenseCategory"><option>Food</option><option>Groceries</option><option>Shopping</option><option>Transport</option><option>Education</option><option>Other</option></select><button class="primary" style="width:100%">Save expense</button></form></div></div>
+<div class="toast" id="toast"></div>
+<script>
+let total=12350;
+function showPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(btn&&btn.dataset.page)btn.classList.add('active');}
+function openExpense(){document.getElementById('expenseModal').classList.add('show')}
+function closeExpense(){document.getElementById('expenseModal').classList.remove('show')}
+function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+document.getElementById('expenseForm').addEventListener('submit',e=>{e.preventDefault();let name=document.getElementById('expenseName').value,amount=Number(document.getElementById('expenseAmount').value),cat=document.getElementById('expenseCategory').value;if(!amount||amount<1)return;total+=amount;document.getElementById('expenses').textContent='₹'+total.toLocaleString('en-IN');document.getElementById('reportSpent').textContent='₹'+total.toLocaleString('en-IN');let row=document.createElement('div');row.className='transaction';row.innerHTML='<div class="tx-icon">💳</div><div class="tx-info"><b></b><small></small></div><span class="amount"></span>';row.querySelector('b').textContent=name;row.querySelector('small').textContent='Just now · '+cat;row.querySelector('.amount').textContent='−₹'+amount.toLocaleString('en-IN');document.getElementById('transactions').prepend(row);closeExpense();e.target.reset();toast('Expense added successfully!')});
+function voice(){showPage('voice');toast('Voice assistant demo started 🎙️')}
+function claim(btn){btn.textContent='Claimed ✓';btn.disabled=true;btn.style.opacity='.6';toast('Offer saved to your coupons!')}
+function setPeriod(p,el){document.querySelectorAll('.tabs span').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.getElementById('periodLabel').textContent='This '+p.toLowerCase();toast(p+' view selected')}
+document.getElementById('expenseModal').addEventListener('click',e=>{if(e.target.id==='expenseModal')closeExpense()});
+</script>
+</body>
+</html>
